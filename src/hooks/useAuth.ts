@@ -22,12 +22,12 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
     } = useQuery({
         queryKey: ['user'],
         queryFn: async () => {
-            const { data } = await axios.get<ApiResponseDetail<User>>(URL_ME, {
+            const { data } = await axios.get<User>(URL_ME, {
                 params: {
                     include: 'roles,permissions',
                 },
             });
-            return data?.data;
+            return data;
         },
         enabled: !!token,
     });

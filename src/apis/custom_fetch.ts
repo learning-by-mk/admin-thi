@@ -4,7 +4,7 @@ import { URL_CONTROLLER, URL_CONTROLLER_ID } from '@/contains/api';
 import { PAGE_SIZE } from '@/contains/index';
 import { ApiRequestListFilter, ApiRequestDetailFilter, ApiResponseList, ApiResponseDetail } from '@/types/Api';
 
-export const customFetch = <T>(controller: string, params?: ApiRequestListFilter): UseQueryResult<ApiResponseList<T>> => {
+export const index = <T>(controller: string, params?: ApiRequestListFilter, url?: string): UseQueryResult<ApiResponseList<T>> => {
     params = params || {};
     params.page = params.page || 1;
     params.limit = params.limit || PAGE_SIZE;
@@ -14,21 +14,56 @@ export const customFetch = <T>(controller: string, params?: ApiRequestListFilter
     return useQuery({
         queryKey: [controller, { params }],
         queryFn: async () => {
-            const { data } = await axios.get<ApiResponseList<T>>(URL_CONTROLLER.replace(':controller', controller), { params });
+            const baseUrl = url || URL_CONTROLLER.replace(':controller', controller);
+            const { data } = await axios.get<ApiResponseList<T>>(baseUrl, { params });
             return data;
         },
     });
 };
 
-export const customFetchDetail = <T>(controller: string, id: number | string, params?: ApiRequestDetailFilter): UseQueryResult<ApiResponseDetail<T>> => {
+export const show = <T>(controller: string, id: number | string, params?: ApiRequestDetailFilter, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
     if (params?.include?.length) {
         params.include = Array.isArray(params.include) ? params.include.join(',') : params.include;
     }
     return useQuery({
         queryKey: [controller, id, params],
         queryFn: async () => {
-            const { data } = await axios.get<ApiResponseDetail<T>>(URL_CONTROLLER_ID.replace(':controller', controller).replace(':id', id.toString()), { params });
+            const baseUrl = url || URL_CONTROLLER_ID.replace(':controller', controller).replace(':id', id.toString());
+            const { data } = await axios.get<ApiResponseDetail<T>>(baseUrl, { params });
             return data;
+        },
+    });
+};
+
+// export const store = <T>(controller: string, data: T, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
+//     return useQuery({
+//         queryKey: [controller, data],
+//         queryFn: async () => {
+//             const baseUrl = url || URL_CONTROLLER.replace(':controller', controller);
+//             const { data: dataApi } = await axios.post<ApiResponseDetail<T>>(baseUrl, data);
+//             return dataApi;
+//         },
+//     });
+// };
+
+export const update = <T>(controller: string, id: number | string, data: T, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
+    return useQuery({
+        queryKey: [controller, id, data],
+        queryFn: async () => {
+            const baseUrl = url || URL_CONTROLLER_ID.replace(':controller', controller).replace(':id', id.toString());
+            const { data: dataApi } = await axios.put<ApiResponseDetail<T>>(baseUrl, data);
+            return dataApi;
+        },
+    });
+};
+
+export const destroy = <T>(controller: string, id: number | string, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
+    return useQuery({
+        queryKey: [controller, id],
+        queryFn: async () => {
+            const baseUrl = url || URL_CONTROLLER_ID.replace(':controller', controller).replace(':id', id.toString());
+            const { data: dataApi } = await axios.delete<ApiResponseDetail<T>>(baseUrl);
+            return dataApi;
         },
     });
 };
