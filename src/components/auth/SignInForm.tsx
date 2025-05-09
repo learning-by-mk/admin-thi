@@ -16,13 +16,7 @@ export default function SignInForm() {
   const [error, setError] = useState('')
   const [form] = Form.useForm();
   const router = useRouter()
-  const { user } = useAuth({ middleware: 'guest' })
-
-  useEffect(() => {
-    if (user) {
-      router.push('/')
-    }
-  }, [user, router])
+  const { user } = useAuth({ middleware: 'guest', redirectIfAuthenticated: '/' })
 
   const mutationLogin = useMutation({
     mutationFn: (values: any) => {

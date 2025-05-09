@@ -13,13 +13,7 @@ export default function SignUpForm() {
   const [form] = Form.useForm();
   const router = useRouter()
   const [error, setError] = useState('')
-  const { user } = useAuth({ middleware: 'guest' })
-
-  useEffect(() => {
-    if (user) {
-      router.push('/')
-    }
-  }, [user, router])
+  const { user } = useAuth({ middleware: 'guest', redirectIfAuthenticated: '/' })
 
   const mutationRegister = useMutation({
     mutationFn: (values: any) => {
