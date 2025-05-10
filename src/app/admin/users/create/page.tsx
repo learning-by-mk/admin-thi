@@ -38,7 +38,7 @@ export default function UserCreatePage() {
         <div>
             <PageBreadcrumb pageTitle="Tạo người dùng" />
             <ComponentCard title="Thông tin người dùng">
-                {error && <Alert message={error} type="error" />}
+                {error && <Alert className='mb-4' message={error} type="error" />}
                 <Form form={form} layout="vertical" onFinish={mutationCreate.mutate}>
                     {/* <Form.Item shouldUpdate>
                         {() => {

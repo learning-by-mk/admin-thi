@@ -1,17 +1,21 @@
 'use client'
 
 import User from '@/models/User'
-import { Button, Space, Table, TableProps } from 'antd'
+import { Button, Popconfirm, Space, Table, TableProps, Tag } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import React, { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import React, { useCallback, useEffect, useState } from 'react'
 import { index } from '@/apis/custom_fetch'
 import { TablePaginationConfig } from 'antd/es/table'
 import Link from 'next/link'
+import axios from '@/lib/axios'
+import { URL_CONTROLLER_ID } from '@/contains/api'
+import useNoti from '@/hooks/useNoti'
+import Role from '@/models/Role'
 interface TableParams {
     pagination?: TablePaginationConfig;
 }
 export default function UserContent() {
+    const { noti } = useNoti()
     const [tableParams, setTableParams] = useState<TableParams>({
         pagination: {
             current: 1,
@@ -40,6 +44,15 @@ export default function UserContent() {
             key: 'status',
         },
         {
+            title: 'Vai trò',
+            dataIndex: 'roles',
+            key: 'roles',
+            render: (text: string, record: User) => {
+                const colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple']
+                return record.roles.map((role: Role, index: number) => <Tag color={colors[Math.floor(Math.random() * 10)]} key={role.id}>{role.name}</Tag>)
+            }
+        },
+        {
             title: 'Hành động',
             dataIndex: 'actions',
             key: 'actions',
@@ -49,7 +62,12 @@ export default function UserContent() {
                         <Button type='primary' icon={<EditOutlined />} >
                             <Link href={`/admin/users/edit/${record.id}`}>Chỉnh sửa</Link>
                         </Button>
-                        <Button type='default' danger icon={<DeleteOutlined />}>Xóa</Button>
+                        <Popconfirm
+                            title="Bạn có chắc chắn muốn xóa không?"
+                            onConfirm={() => handleDelete(record.id)}
+                        >
+                            <Button type='default' danger icon={<DeleteOutlined />}>Xóa</Button>
+                        </Popconfirm>
                     </Space>
                 )
             }
@@ -60,11 +78,25 @@ export default function UserContent() {
         include: 'roles',
     })
 
-    useEffect(() => {
-        if (users?.data) {
-            console.log(users.data)
-        }
-    }, [users])
+    const handleDelete = useCallback((id: number) => {
+        axios.delete(URL_CONTROLLER_ID.replace(':controller', 'users').replace(':id', id.toString()))
+            .then((res) => {
+                if (res.status === 200) {
+                    noti({
+                        message: 'Thành công',
+                        type: 'success',
+                        description: 'Xóa thành công',
+                    })
+                } else {
+                    noti({
+                        message: 'Thất bại',
+                        type: 'error',
+                        description: 'Xóa thất bại'
+                    })
+                }
+            })
+    }, [])
+
     return (
         <Table columns={columns} dataSource={users?.data ?? []} pagination={tableParams.pagination} />
     )
