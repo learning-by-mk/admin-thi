@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SidebarProvider } from "@/context/SidebarContext";
 import QueryClientContext from "@/context/QueryClientContext";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import 'antd/dist/reset.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,13 +34,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
-        <QueryClientContext>
-          <ThemeProvider>
-            <SidebarProvider>
-              {children}
-            </SidebarProvider>
-          </ThemeProvider>
-        </QueryClientContext>
+        <AntdRegistry>
+          <QueryClientContext>
+
+            <ThemeProvider>
+              <SidebarProvider>
+                {children}
+              </SidebarProvider>
+            </ThemeProvider>
+          </QueryClientContext>
+        </AntdRegistry>
       </body>
     </html>
   );

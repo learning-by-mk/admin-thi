@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
         });
         return config;
     },
+    output: 'standalone',
+    reactStrictMode: true,
+    compress: true,
 };
 
 export default nextConfig;

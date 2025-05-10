@@ -3,14 +3,29 @@
 import User from '@/models/User'
 import { Button, Space, Table, TableProps } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { index } from '@/apis/custom_fetch'
-
+import { TablePaginationConfig } from 'antd/es/table'
+import Link from 'next/link'
+interface TableParams {
+    pagination?: TablePaginationConfig;
+}
 export default function UserContent() {
+    const [tableParams, setTableParams] = useState<TableParams>({
+        pagination: {
+            current: 1,
+            pageSize: 100,
+        },
+    });
     const columns: TableProps<User>['columns'] = [
         {
-            title: 'Name',
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
+        },
+        {
+            title: 'Tên',
             dataIndex: 'name',
             key: 'name',
         },
@@ -20,24 +35,21 @@ export default function UserContent() {
             key: 'email',
         },
         {
-            title: 'Role',
-            dataIndex: 'role',
-            key: 'role',
-        },
-        {
-            title: 'Status',
+            title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
         },
         {
-            title: 'Actions',
+            title: 'Hành động',
             dataIndex: 'actions',
             key: 'actions',
             render: (text: string, record: User) => {
                 return (
                     <Space size="middle">
-                        <Button type='primary' icon={<EditOutlined />} >Edit</Button>
-                        <Button type='default' danger icon={<DeleteOutlined />}>Delete</Button>
+                        <Button type='primary' icon={<EditOutlined />} >
+                            <Link href={`/admin/users/edit/${record.id}`}>Chỉnh sửa</Link>
+                        </Button>
+                        <Button type='default' danger icon={<DeleteOutlined />}>Xóa</Button>
                     </Space>
                 )
             }
@@ -54,7 +66,6 @@ export default function UserContent() {
         }
     }, [users])
     return (
-        // Basic Table 
-        <Table columns={columns} dataSource={users?.data ?? []} />
+        <Table columns={columns} dataSource={users?.data ?? []} pagination={tableParams.pagination} />
     )
 }

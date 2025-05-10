@@ -35,28 +35,6 @@ export const show = <T>(controller: string, id: number | string, params?: ApiReq
     });
 };
 
-// export const store = <T>(controller: string, data: T, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
-//     return useQuery({
-//         queryKey: [controller, data],
-//         queryFn: async () => {
-//             const baseUrl = url || URL_CONTROLLER.replace(':controller', controller);
-//             const { data: dataApi } = await axios.post<ApiResponseDetail<T>>(baseUrl, data);
-//             return dataApi;
-//         },
-//     });
-// };
-
-export const update = <T>(controller: string, id: number | string, data: T, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
-    return useQuery({
-        queryKey: [controller, id, data],
-        queryFn: async () => {
-            const baseUrl = url || URL_CONTROLLER_ID.replace(':controller', controller).replace(':id', id.toString());
-            const { data: dataApi } = await axios.put<ApiResponseDetail<T>>(baseUrl, data);
-            return dataApi;
-        },
-    });
-};
-
 export const destroy = <T>(controller: string, id: number | string, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
     return useQuery({
         queryKey: [controller, id],
