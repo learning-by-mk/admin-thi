@@ -1,9 +1,11 @@
 "use client";
 
 import { useSidebar } from "@/context/SidebarContext";
+import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
+import { AUTH } from "@/types/middleware";
 import React from "react";
 
 export default function AdminLayout({
@@ -11,6 +13,7 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const { user } = useAuth({ middleware: AUTH, redirectIfAuthenticated: "/login" });
     const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
     // Dynamic class for main content margin based on sidebar state

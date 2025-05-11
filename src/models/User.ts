@@ -11,4 +11,5 @@ export default interface User {
     roles: Role[];
     permissions?: string[];
     email_verified_at: string;
+    isAdmin: boolean;
 }
