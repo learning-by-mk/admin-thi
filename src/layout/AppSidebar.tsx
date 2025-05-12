@@ -16,6 +16,7 @@ import {
   PageIcon,
   PieChartIcon,
   PlugInIcon,
+  SettingIcon,
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
@@ -64,6 +65,12 @@ const navItems: NavItem[] = [
       { name: "Tạo danh mục", path: "/admin/categories/create", pro: false },
       { name: "Danh sách danh mục", path: "/admin/categories", pro: false },
     ],
+  },
+  {
+    icon: <SettingIcon />,
+    name: "Cài đặt",
+    path: "/admin/settings",
+    subItems: [{ name: "Cài đặt", path: "/admin/settings", pro: false }],
   },
 
   // {
