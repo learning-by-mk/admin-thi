@@ -9,31 +9,41 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "@/lib/axios";
 import { URL_CONTROLLER } from "@/contains/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-
+import useNoti from "@/hooks/useNoti";
+import { GUEST } from "@/types/middleware";
 export default function SignInForm() {
   const [error, setError] = useState('')
   const [form] = Form.useForm();
   const router = useRouter()
-  const { user } = useAuth({ middleware: 'guest', redirectIfAuthenticated: '/' })
-
-  const mutationLogin = useMutation({
-    mutationFn: (values: any) => {
-      return axios.post(URL_CONTROLLER.replace(':controller', 'login'), values);
-    }
-  })
+  const { user, login } = useAuth({ middleware: GUEST, redirectIfAuthenticated: '/' })
+  const { noti } = useNoti();
+  const queryClient = useQueryClient();
 
   const handleSubmit = useCallback((values: any) => {
-    mutationLogin.mutate(values, {
-      onSuccess: () => {
-        router.push('/')
+    login.mutate(values, {
+      onSuccess: (data) => {
+        if (data.isAdmin) {
+          localStorage.setItem('token', data.token);
+          router.push('/')
+        } else {
+          localStorage.removeItem('token');
+          queryClient.setQueryData(['user'], null);
+          queryClient.invalidateQueries({ queryKey: ['user'] });
+          noti({
+            message: 'Bạn không có quyền truy cập vào trang này',
+            description: 'Vui lòng liên hệ quản trị viên để được hỗ trợ',
+            type: 'error',
+          });
+        }
       },
       onError: (error: any) => {
+        localStorage.removeItem('token');
         setError(error?.response?.data?.message ?? 'Đăng nhập thất bại')
       }
     })
-  }, []);
+  }, [login, router, queryClient, noti]);
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
