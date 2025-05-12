@@ -27,7 +27,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         queryFn: async () => {
             const { data } = await axios.get<User>(URL_ME, {
                 params: {
-                    include: 'roles,permissions',
+                    load: 'roles,permissions',
                 },
             });
             return data;
@@ -96,14 +96,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         await axios.post('/email/verification-notification').then((response) => setStatus(response.data.status));
     };
 
-    // const logout = async () => {
-    //     if (!error) {
-    //         localStorage.removeItem('token');
-    //         axios.post(URL_LOGOUT).then(() => refetch());
-    //     }
-
-    //     window.location.pathname = URL_WEB_LOGIN;
-    // };
     const logout = useMutation({
         mutationFn: async () => {
             const data = await axios.post(URL_LOGOUT);

@@ -1,0 +1,22 @@
+<svg width="154" height="32" viewBox="0 0 154 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Meme face background -->
+  <path d="M0 8.42105C0 3.77023 3.77023 0 8.42105 0H23.5789C28.2298 0 32 3.77023 32 8.42105V23.5789C32 28.2298 28.2298 32 23.5789 32H8.42105C3.77023 32 0 28.2298 0 23.5789V8.42105Z" fill="#FF9800"/>
+  
+  <!-- Meme face features -->
+  <circle cx="10" cy="12" r="2.5" fill="black"/> <!-- Left eye -->
+  <circle cx="22" cy="12" r="2.5" fill="black"/> <!-- Right eye -->
+  <path d="M8 22C8 22 16 26 24 22" stroke="black" stroke-width="2" fill="none"/> <!-- Smile -->
+  
+  <!-- Trollface eyebrows -->
+  <path d="M7 8C7 8 11 6 13 9" stroke="black" stroke-width="1.5" fill="none"/>
+  <path d="M25 8C25 8 21 6 19 9" stroke="black" stroke-width="1.5" fill="none"/>
+  
+  <!-- "mk" text -->
+  <path d="M44 10.1149H49.0885V24.6909H52.1321V10.1149H57.2206V7.30912H44V10.1149Z" fill="#101828" style="display:none"/>
+  
+  <!-- M letter -->
+  <path d="M44 7.30912V24.6909H47.5V24.6909M47.5 24.6909V7.30912L53 18L58.5 7.30912V24.6909H62V7.30912H56L53 15L50 7.30912H44" fill="#101828" stroke="#101828" stroke-width="0.5"/>
+  
+  <!-- K letter -->
+  <path d="M58 7.30912V24.6909H61V17L67 24.6909H71L64 16L71 7.30912H67L61 15V7.30912H58Z" fill="#101828"/>
+</svg>
