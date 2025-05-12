@@ -1,5 +1,6 @@
 // Backend Links
 export const URL_LOGIN = '/api/login';
+export const URL_REGISTER = '/api/register';
 export const URL_LOGOUT = '/api/logout';
 export const URL_ME = '/api/user/me';
 export const URL_CONTROLLER = '/api/:controller';

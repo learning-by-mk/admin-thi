@@ -5,7 +5,7 @@ import { AUTH, GUEST } from '@/types/middleware';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import User from '@/models/User';
 import { ApiResponseDetail } from '@/types/Api';
-import { URL_ME, URL_LOGIN, URL_LOGOUT } from '@/contains/api';
+import { URL_ME, URL_LOGIN, URL_LOGOUT, URL_REGISTER } from '@/contains/api';
 import { URL_WEB_LOGIN } from '@/contains/web';
 import useNoti from './useNoti';
 
@@ -52,6 +52,13 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         //         });
         //     }
         // },
+    });
+
+    const register = useMutation({
+        mutationFn: async (props: any) => {
+            const response = await axios.post(URL_REGISTER, props);
+            return response.data;
+        },
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
@@ -159,5 +166,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         resetPassword,
         resendEmailVerification,
         logout,
+        register,
     };
 };

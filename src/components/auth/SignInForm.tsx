@@ -139,7 +139,7 @@ export default function SignInForm() {
               {error && <p className="text-red-500">{error}</p>}
             </div>
 
-            <div className="mt-5">
+            {/* <div className="mt-5">
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 Không có tài khoản? {""}
                 <Link
@@ -149,7 +149,7 @@ export default function SignInForm() {
                   Đăng ký
                 </Link>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

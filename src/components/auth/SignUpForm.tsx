@@ -5,29 +5,22 @@ import { Button, Form } from "antd";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "@/lib/axios";
-import { URL_CONTROLLER } from "@/contains/api";
-import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
+import { GUEST } from "@/types/middleware";
+import { URL_WEB_LOGIN } from "@/contains/web";
 export default function SignUpForm() {
   const [form] = Form.useForm();
   const router = useRouter()
   const [error, setError] = useState('')
-  const { user } = useAuth({ middleware: 'guest', redirectIfAuthenticated: '/' })
-
-  const mutationRegister = useMutation({
-    mutationFn: (values: any) => {
-      return axios.post(URL_CONTROLLER.replace(':controller', 'register'), values);
-    }
-  })
+  const { register } = useAuth({ middleware: GUEST, redirectIfAuthenticated: '/' })
 
   const handleSubmit = useCallback((values: any) => {
-    mutationRegister.mutate(values, {
+    register.mutate(values, {
       onSuccess: () => {
-        router.push('/')
+        router.push(URL_WEB_LOGIN)
       },
       onError: (error: any) => {
-        setError(error?.response?.data?.message ?? 'Đăng ký thất bại')
+        setError(error?.response?.data?.message ?? 'Đăng nhập thất bại')
       }
     })
   }, []);
