@@ -46,6 +46,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Tạo người dùng", path: "/admin/users/create", pro: false },
       { name: "Danh sách người dùng", path: "/admin/users", pro: false },
+      { name: "Thống kê", path: "/admin/users/statistics", pro: false },
     ],
   },
   {
