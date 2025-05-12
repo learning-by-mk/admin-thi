@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMutation, UseMutationResult, useQuery, UseQueryResult } from '@tanstack/react-query';
 import axios from '@/lib/axios';
 import { URL_CONTROLLER, URL_CONTROLLER_ID } from '@/contains/api';
 import { PAGE_SIZE } from '@/contains/index';
@@ -22,6 +22,14 @@ export const index = <T>(controller: string, params?: ApiRequestListFilter, url?
     });
 };
 
+export const store = <T>(controller: string, data: T, url?: string): UseMutationResult<ApiResponseDetail<T>> => {
+    return useMutation({
+        mutationFn: async () => {
+            const { data: response } = await axios.post<ApiResponseDetail<T>>(url || URL_CONTROLLER.replace(':controller', controller), data);
+            return response;
+        },
+    });
+};
 export const show = <T>(controller: string, id: number | string, params?: ApiRequestDetailFilter, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
     if (params?.include?.length) {
         params.include = Array.isArray(params.include) ? params.include.join(',') : params.include;

@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 export function middleware(req: NextRequest) {
-    // Rewrite API URL
     const { pathname } = req.nextUrl;
+
+    // Redirect root path to /admin
+    if (pathname === '/') {
+        return NextResponse.redirect(new URL('/admin', req.url));
+    }
+
+    // Rewrite API URL
     if (pathname.startsWith('/api')) {
         const url = req.nextUrl.clone();
         const apiUrl = process.env.API_URL || 'http://api';
