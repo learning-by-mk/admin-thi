@@ -124,6 +124,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
     // }, [user, token]);
 
     useEffect(() => {
+        if (!user && !error) return;
         // Nếu đang ở trang GUEST (login/register) và đã đăng nhập (có user) và là admin
         // thì chuyển hướng đến trang được chỉ định
         if (middleware === GUEST && redirectIfAuthenticated && user && user.isAdmin) {

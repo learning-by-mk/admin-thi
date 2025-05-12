@@ -43,7 +43,12 @@ export default function UserEditPage() {
 
     useEffect(() => {
         if (user?.data) {
-            form.setFieldsValue(user.data)
+            form.setFieldsValue(
+                {
+                    ...user.data,
+                    role: user?.data?.roles?.[0]?.name,
+                }
+            )
         }
     }, [user])
 
@@ -68,6 +73,11 @@ export default function UserEditPage() {
                     >
                         <Input type='email' />
                     </Form.Item>
+
+                    <Form.Item label="Số điện thoại" name="phone">
+                        <Input />
+                    </Form.Item>
+
                     <Form.Item label="Mật khẩu" name="password"
                     >
                         <Input.Password />
@@ -76,12 +86,21 @@ export default function UserEditPage() {
                     >
                         <Input.Password />
                     </Form.Item>
-                    <Form.Item label="Vai trò" name="role" initialValue={user?.data?.roles[0]?.name}>
+                    <Form.Item label="Vai trò" name="role" initialValue={user?.data?.roles[0]?.name} rules={[{ required: true, message: 'Vai trò là bắt buộc' }]}>
                         <Select options={roles?.data?.map((role: Role) => ({ label: role.name, value: role.name })) || []} />
                     </Form.Item>
-                    <Form.Item label="Trạng thái" name="status" valuePropName="checked" initialValue={true}>
-                        <Checkbox />
+                    <Form.Item label="Trạng thái" name="status" initialValue={true}>
+                        <Select options={[{ label: 'Hoạt động', value: 'active' }, { label: 'Không hoạt động', value: 'inactive' }]} />
                     </Form.Item>
+
+                    <Form.Item label="Tiểu sử" name="bio">
+                        <Input.TextArea rows={4} readOnly />
+                    </Form.Item>
+
+                    <Form.Item label="Sở thích" name="hobbies">
+                        <Input.TextArea rows={4} readOnly />
+                    </Form.Item>
+
                     <Form.Item>
                         <Button color="danger" variant="filled" htmlType="submit">Cập nhật người dùng</Button>
                     </Form.Item>

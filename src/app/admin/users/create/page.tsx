@@ -65,11 +65,11 @@ export default function UserCreatePage() {
                     >
                         <Input.Password />
                     </Form.Item>
-                    <Form.Item label="Vai trò" name="role">
+                    <Form.Item label="Vai trò" name="role" initialValue={'user'} rules={[{ required: true, message: 'Vai trò là bắt buộc' }]}>
                         <Select options={roles?.data?.map((role: Role) => ({ label: role.name, value: role.name })) || []} />
                     </Form.Item>
-                    <Form.Item label="Trạng thái" name="status" valuePropName="checked" initialValue={true}>
-                        <Checkbox />
+                    <Form.Item label="Trạng thái" name="status" initialValue={'active'}>
+                        <Select options={[{ label: 'Hoạt động', value: 'active' }, { label: 'Không hoạt động', value: 'inactive' }]} />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">Tạo người dùng</Button>

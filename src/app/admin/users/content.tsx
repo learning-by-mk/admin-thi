@@ -11,6 +11,7 @@ import axios from '@/lib/axios'
 import { URL_CONTROLLER_ID } from '@/contains/api'
 import useNoti from '@/hooks/useNoti'
 import Role from '@/models/Role'
+import { colors } from '@/contains/colorTag'
 interface TableParams {
     pagination?: TablePaginationConfig;
 }
@@ -42,14 +43,16 @@ export default function UserContent() {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
+            render: (text: string, record: User) => {
+                return <Tag color={record.status === 'active' ? 'green' : 'red'}>{record.status}</Tag>
+            }
         },
         {
             title: 'Vai trò',
             dataIndex: 'roles',
             key: 'roles',
-            render: (text: string, record: User) => {
-                const colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple']
-                return record.roles.map((role: Role, index: number) => <Tag color={colors[Math.floor(Math.random() * 10)]} key={role.id}>{role.name}</Tag>)
+            render: (roles: Role[]) => {
+                return roles.map((role: Role, index: number) => <Tag color={colors[Math.floor(Math.random() * 10)]} key={role.id}>{role.name}</Tag>)
             }
         },
         {
@@ -75,7 +78,7 @@ export default function UserContent() {
     ]
 
     const { data: users } = index<User>('users', {
-        include: 'roles',
+        load: 'roles',
     })
 
     const handleDelete = useCallback((id: number) => {

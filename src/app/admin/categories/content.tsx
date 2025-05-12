@@ -10,26 +10,18 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import useNoti from '@/hooks/useNoti';
-import { index } from '@/apis/custom_fetch';
-import Document from '@/models/Document';
 import Category from '@/models/Category';
-import { colors } from '@/contains/colorTag';
+import { index } from '@/apis/custom_fetch';
 import { TablePaginationConfig } from 'antd/es/table';
 
 interface TableParams {
     pagination?: TablePaginationConfig;
 }
 
-const DocumentsContent = () => {
-    const router = useRouter();
+const CategoriesContent = () => {
     const { noti } = useNoti();
     const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
-
-    const { data: documents } = index<Document>('documents', {
-        load: "categories, author, uploadedBy"
-    })
-
     const [tableParams, setTableParams] = useState<TableParams>({
         pagination: {
             current: 1,
@@ -37,9 +29,11 @@ const DocumentsContent = () => {
         },
     });
 
+    const { data: categories } = index<Category>('categories')
+
     const mutation = useMutation({
         mutationFn: async (id: string) => {
-            const url = `${URL_CONTROLLER}/documents/${id}`;
+            const url = `${URL_CONTROLLER}/categories/${id}`;
             const res = await axios.delete(url);
             return res.data;
         },
@@ -50,10 +44,10 @@ const DocumentsContent = () => {
         onSuccess: () => {
             noti({
                 message: 'Thành công',
-                description: 'Xóa tài liệu thành công',
+                description: 'Xóa danh mục thành công',
                 type: 'success',
             });
-            queryClient.invalidateQueries({ queryKey: ['documents'] });
+            queryClient.invalidateQueries({ queryKey: ['categories'] });
         },
     });
 
@@ -64,48 +58,31 @@ const DocumentsContent = () => {
             key: 'id',
         },
         {
-            title: 'Tiêu đề',
-            dataIndex: 'title',
-            key: 'title',
+            title: 'Tên danh mục',
+            dataIndex: 'name',
+            key: 'name',
         },
         {
-            title: 'Danh mục',
-            dataIndex: 'categories',
-            key: 'category',
-            render: (categories: Category[]) => {
-                return categories.map((category) => <Tag color={colors[Math.floor(Math.random() * 10)]} key={category.id}>{category.name}</Tag>);
-            }
+            title: 'Mô tả',
+            dataIndex: 'description',
+            key: 'description',
+            render: (text: string) => text?.length > 100 ? `${text.substring(0, 100)}...` : text,
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
             render: (status: string) => {
-                let color = 'blue';
-                if (status === 'approved') {
-                    color = 'green';
-                } else if (status === 'rejected') {
-                    color = 'red';
-                }
+                const color = status === 'active' ? 'green' : 'red';
                 return <Tag color={color}>{status}</Tag>;
             },
         },
         {
-            title: 'Người tải lên',
-            dataIndex: ['uploaded_by', 'name'],
-            key: 'uploaded_by',
-        },
-        {
-            title: 'Ngày tạo',
-            dataIndex: 'created_at',
-            key: 'created_at',
-        },
-        {
             title: 'Thao tác',
             key: 'action',
-            render: (record: Document) => (
+            render: (record: Category) => (
                 <Space size="middle">
-                    <Link href={`/admin/documents/edit/${record.id}`}>
+                    <Link href={`/admin/categories/edit/${record.id}`}>
                         <Button type="primary" size="small">
                             Sửa
                         </Button>
@@ -128,12 +105,11 @@ const DocumentsContent = () => {
     return (
         <Table
             columns={columns}
-            dataSource={documents?.data || []}
+            dataSource={categories?.data || []}
             rowKey="id"
             pagination={tableParams.pagination}
-
         />
     );
 };
 
-export default DocumentsContent;
+export default CategoriesContent; 

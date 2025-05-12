@@ -9,8 +9,8 @@ export const index = <T>(controller: string, params?: ApiRequestListFilter, url?
     params = params || {};
     params.page = params.page || 1;
     params.limit = params.limit || PAGE_SIZE;
-    if (params.include?.length) {
-        params.include = Array.isArray(params.include) ? params.include.join(',') : params.include;
+    if (params.load?.length) {
+        params.load = Array.isArray(params.load) ? params.load.join(',') : params.load;
     }
     return useQuery({
         queryKey: [controller, { params }],
@@ -22,17 +22,9 @@ export const index = <T>(controller: string, params?: ApiRequestListFilter, url?
     });
 };
 
-export const store = <T>(controller: string, data: T, url?: string): UseMutationResult<ApiResponseDetail<T>> => {
-    return useMutation({
-        mutationFn: async () => {
-            const { data: response } = await axios.post<ApiResponseDetail<T>>(url || URL_CONTROLLER.replace(':controller', controller), data);
-            return response;
-        },
-    });
-};
 export const show = <T>(controller: string, id: number | string, params?: ApiRequestDetailFilter, url?: string): UseQueryResult<ApiResponseDetail<T>> => {
-    if (params?.include?.length) {
-        params.include = Array.isArray(params.include) ? params.include.join(',') : params.include;
+    if (params?.load?.length) {
+        params.load = Array.isArray(params.load) ? params.load.join(',') : params.load;
     }
     return useQuery({
         queryKey: [controller, id, params],

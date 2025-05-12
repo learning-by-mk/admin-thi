@@ -11,9 +11,6 @@ import { AUTH } from "@/types/middleware";
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth({ middleware: AUTH });
-  useEffect(() => {
-    console.log(user)
-  }, [user])
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();

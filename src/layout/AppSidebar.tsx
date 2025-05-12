@@ -7,7 +7,9 @@ import { useSidebar } from "../context/SidebarContext";
 import {
   BoxCubeIcon,
   CalenderIcon,
+  CategoryIcon,
   ChevronDownIcon,
+  FileIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
@@ -43,6 +45,24 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Tạo người dùng", path: "/admin/users/create", pro: false },
       { name: "Danh sách người dùng", path: "/admin/users", pro: false },
+    ],
+  },
+  {
+    icon: <FileIcon />,
+    name: "Tài liệu",
+    path: "/admin/documents",
+    subItems: [
+      { name: "Tạo tài liệu", path: "/admin/documents/create", pro: false },
+      { name: "Danh sách tài liệu", path: "/admin/documents", pro: false },
+    ],
+  },
+  {
+    icon: <CategoryIcon />,
+    name: "Danh mục",
+    path: "/admin/categories",
+    subItems: [
+      { name: "Tạo danh mục", path: "/admin/categories/create", pro: false },
+      { name: "Danh sách danh mục", path: "/admin/categories", pro: false },
     ],
   },
 
