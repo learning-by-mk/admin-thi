@@ -24,7 +24,6 @@ const DocumentsContent = () => {
     const router = useRouter();
     const { noti } = useNoti();
     const queryClient = useQueryClient();
-    const [error, setError] = useState<string | null>(null);
 
     const { data: documents } = index<Document>('documents', {
         load: "categories, author, uploadedBy"
@@ -39,13 +38,17 @@ const DocumentsContent = () => {
 
     const mutation = useMutation({
         mutationFn: async (id: string) => {
-            const url = `${URL_CONTROLLER}/documents/${id}`;
+            const url = URL_CONTROLLER.replace(':controller', 'documents') + `/${id}`;
             const res = await axios.delete(url);
             return res.data;
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.log(error);
-            setError(error.message);
+            noti({
+                message: 'Thất bại',
+                description: error?.response?.data?.message || 'Xóa thất bại',
+                type: 'error',
+            })
         },
         onSuccess: () => {
             noti({

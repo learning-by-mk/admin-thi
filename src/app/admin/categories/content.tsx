@@ -21,7 +21,7 @@ interface TableParams {
 const CategoriesContent = () => {
     const { noti } = useNoti();
     const queryClient = useQueryClient();
-    const [error, setError] = useState<string | null>(null);
+    // const [error, setError] = useState<string | null>(null);
     const [tableParams, setTableParams] = useState<TableParams>({
         pagination: {
             current: 1,
@@ -31,15 +31,19 @@ const CategoriesContent = () => {
 
     const { data: categories } = index<Category>('categories')
 
-    const mutation = useMutation({
+    const mutationDelete = useMutation({
         mutationFn: async (id: string) => {
-            const url = `${URL_CONTROLLER}/categories/${id}`;
+            const url = URL_CONTROLLER.replace(':controller', 'categories') + `/${id}`;
             const res = await axios.delete(url);
             return res.data;
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.log(error);
-            setError(error.message);
+            noti({
+                message: 'Thất bại',
+                description: error?.response?.data?.message || 'Xóa thất bại',
+                type: 'error',
+            })
         },
         onSuccess: () => {
             noti({
@@ -49,7 +53,7 @@ const CategoriesContent = () => {
             });
             queryClient.invalidateQueries({ queryKey: ['categories'] });
         },
-    });
+    })
 
     const columns = [
         {
@@ -89,7 +93,7 @@ const CategoriesContent = () => {
                     </Link>
                     <Popconfirm
                         title="Bạn có chắc chắn muốn xóa?"
-                        onConfirm={() => mutation.mutate(record.id.toString())}
+                        onConfirm={() => mutationDelete.mutate(record.id.toString())}
                         okText="Có"
                         cancelText="Không"
                     >

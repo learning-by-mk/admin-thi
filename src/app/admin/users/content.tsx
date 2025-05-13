@@ -8,10 +8,11 @@ import { index } from '@/apis/custom_fetch'
 import { TablePaginationConfig } from 'antd/es/table'
 import Link from 'next/link'
 import axios from '@/lib/axios'
-import { URL_CONTROLLER_ID } from '@/contains/api'
+import { URL_CONTROLLER, URL_CONTROLLER_ID } from '@/contains/api'
 import useNoti from '@/hooks/useNoti'
 import Role from '@/models/Role'
 import { colors } from '@/contains/colorTag'
+import { useMutation } from '@tanstack/react-query'
 interface TableParams {
     pagination?: TablePaginationConfig;
 }
@@ -23,6 +24,30 @@ export default function UserContent() {
             pageSize: 100,
         },
     });
+
+    const mutationDelete = useMutation({
+        mutationFn: async (id: string) => {
+            const url = URL_CONTROLLER.replace(':controller', 'users') + `/${id}`;
+            const res = await axios.delete(url);
+            return res.data;
+        },
+        onError: (error: any) => {
+            console.log(error);
+            noti({
+                message: 'Thất bại',
+                description: error?.response?.data?.message || 'Xóa thất bại',
+                type: 'error',
+            })
+        },
+        onSuccess: () => {
+            noti({
+                message: 'Thành công',
+                description: 'Xóa thành công',
+                type: 'success',
+            })
+        },
+    })
+
     const columns: TableProps<User>['columns'] = [
         {
             title: 'ID',
@@ -67,7 +92,7 @@ export default function UserContent() {
                         </Button>
                         <Popconfirm
                             title="Bạn có chắc chắn muốn xóa không?"
-                            onConfirm={() => handleDelete(record.id)}
+                            onConfirm={() => mutationDelete.mutate(record.id.toString())}
                         >
                             <Button type='default' danger icon={<DeleteOutlined />}>Xóa</Button>
                         </Popconfirm>
@@ -80,25 +105,6 @@ export default function UserContent() {
     const { data: users } = index<User>('users', {
         load: 'roles',
     })
-
-    const handleDelete = useCallback((id: number) => {
-        axios.delete(URL_CONTROLLER_ID.replace(':controller', 'users').replace(':id', id.toString()))
-            .then((res) => {
-                if (res.status === 200) {
-                    noti({
-                        message: 'Thành công',
-                        type: 'success',
-                        description: 'Xóa thành công',
-                    })
-                } else {
-                    noti({
-                        message: 'Thất bại',
-                        type: 'error',
-                        description: 'Xóa thất bại'
-                    })
-                }
-            })
-    }, [])
 
     return (
         <Table columns={columns} dataSource={users?.data ?? []} pagination={tableParams.pagination} />
