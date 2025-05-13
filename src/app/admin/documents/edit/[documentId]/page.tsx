@@ -18,7 +18,7 @@ import Document from '@/models/Document';
 import { getBase64 } from '@/lib/functions';
 import { RcFile } from 'antd/es/upload';
 const editorStyle = {
-    width: '80%',
+    width: '100%',
     height: '500px',
     transition: 'height 0.3s ease-in-out',
     marginBottom: '70px'
@@ -131,11 +131,11 @@ export default function DocumentEditPage() {
                     ...document?.data as any,
                     category_ids: (document?.data as Document)?.categories?.map((category: Category) => category.id)
                 }}>
-                    <Form.Item shouldUpdate>
+                    {/* <Form.Item shouldUpdate>
                         {() => {
                             return <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>;
                         }}
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item
                         label={"Hình ảnh"}
                         valuePropName="fileList"

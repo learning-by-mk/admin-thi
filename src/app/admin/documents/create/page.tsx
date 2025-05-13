@@ -105,11 +105,11 @@ export default function DocumentCreatePage() {
             <ComponentCard title="Thông tin tài liệu">
                 {error && <Alert className='mb-4' message={error} type="error" />}
                 <Form form={form} layout="vertical" onFinish={mutationCreate.mutate}>
-                    <Form.Item shouldUpdate>
+                    {/* <Form.Item shouldUpdate>
                         {() => {
                             return <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>;
                         }}
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item
                         label={"Hình ảnh"}
                         valuePropName="fileList"
