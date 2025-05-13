@@ -20,6 +20,16 @@ export function middleware(req: NextRequest) {
         console.log('url', url);
 
         return NextResponse.rewrite(url);
+    } else if (pathname.startsWith('/storage')) {
+        const url = req.nextUrl.clone();
+        const apiUrl = process.env.API_URL || 'http://storage';
+        const destination = new URL(apiUrl);
+        url.host = destination.host;
+        url.port = destination.port;
+        url.protocol = destination.protocol;
+        url.pathname = pathname;
+
+        return NextResponse.rewrite(url);
     } else {
         return NextResponse.next();
     }

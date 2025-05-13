@@ -27,7 +27,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: { middleware?: 
         queryFn: async () => {
             const { data } = await axios.get<User>(URL_ME, {
                 params: {
-                    load: 'roles,permissions',
+                    load: 'roles,permissions,avatar',
                 },
             });
             return data;

@@ -1,6 +1,6 @@
 import { JSX } from 'react';
 import Role from './Role';
-
+import File from './File';
 export default interface User {
     id: number;
     name: string;
@@ -12,4 +12,5 @@ export default interface User {
     permissions?: string[];
     email_verified_at: string;
     isAdmin: boolean;
+    avatar: File[];
 }
