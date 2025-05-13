@@ -28,6 +28,7 @@
         "react-apexcharts": "^1.7.0",
         "react-dom": "^19.0.0",
         "react-dropzone": "^14.3.8",
+        "react-quill-new": "^3.4.6",
         "react-redux": "^9.2.0",
         "redux-toolkit": "^1.1.2",
         "swr": "^2.3.3",

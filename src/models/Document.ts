@@ -20,6 +20,7 @@ export default interface Document {
     file_path: string;
     pdf_path: string;
     status: DocumentStatus;
+    content: string;
     author_id: number;
     author: User;
     categories: Category[];
@@ -34,4 +35,8 @@ export default interface Document {
     created_at: string;
     updated_at: string;
     publish_date: string;
+    image: File[];
+    image_id: number;
+    file: File[];
+    file_id: number;
 }
