@@ -7,12 +7,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import ComponentCard from '@/components/common/ComponentCard';
 import useNoti from '@/hooks/useNoti';
 import Category from '@/models/Category';
 import { index } from '@/apis/custom_fetch';
 import { TablePaginationConfig } from 'antd/es/table';
+import iconComponents from '@/contains/icon';
+
+const renderIcon = (iconName: string, props = {}) => {
+    if (iconName in iconComponents) {
+        const IconComponent = iconComponents[iconName];
+        return <IconComponent {...props} />;
+    }
+    return null;
+};
 
 interface TableParams {
     pagination?: TablePaginationConfig;
@@ -65,6 +72,12 @@ const CategoriesContent = () => {
             title: 'Tên danh mục',
             dataIndex: 'name',
             key: 'name',
+        },
+        {
+            title: 'Icon',
+            dataIndex: 'icon',
+            key: 'icon',
+            render: (icon: string) => renderIcon(icon) || 'Không có icon',
         },
         {
             title: 'Mô tả',

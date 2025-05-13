@@ -2,7 +2,7 @@
 
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { Alert, Form, Input, Button, Select } from 'antd';
+import { Alert, Form, Input, Button, Select, Space } from 'antd';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import useNoti from '@/hooks/useNoti';
@@ -10,7 +10,13 @@ import { show } from '@/apis/custom_fetch';
 import { useMutation } from '@tanstack/react-query';
 import axios from '@/lib/axios';
 import { URL_EDIT } from '@/contains/api';
+import { iconKeys } from '@/contains/icon';
+import iconComponents from '@/contains/icon';
 
+const renderIcon = (iconName: string, props = {}) => {
+    const IconComponent = iconComponents[iconName];
+    return <IconComponent {...props} />;
+};
 export default function CategoryEditPage() {
     const { categoryId } = useParams();
     const router = useRouter()
@@ -61,6 +67,14 @@ export default function CategoryEditPage() {
 
                     <Form.Item label="Mô tả" name="description">
                         <Input.TextArea rows={4} />
+                    </Form.Item>
+
+                    <Form.Item label="Icon" name="icon">
+                        <Select
+                            showSearch
+                            options={iconKeys.map(icon => ({ label: icon, value: icon }))}
+                            optionRender={(option) => <Space>{renderIcon(option.data.value)} {option.label}</Space>}
+                        />
                     </Form.Item>
 
                     <Form.Item label="Trạng thái" name="status" initialValue="active">

@@ -2,14 +2,19 @@
 
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { Alert, Form, Input, Button, Select } from 'antd';
+import { Alert, Form, Input, Button, Select, Space } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import useNoti from '@/hooks/useNoti';
 import { useMutation } from '@tanstack/react-query';
 import axios from '@/lib/axios';
 import { URL_CONTROLLER } from '@/contains/api';
+import iconComponents, { iconKeys } from '@/contains/icon';
 
+const renderIcon = (iconName: string, props = {}) => {
+    const IconComponent = iconComponents[iconName];
+    return <IconComponent {...props} />;
+};
 export default function CategoryCreatePage() {
     const router = useRouter()
     const [form] = Form.useForm();
@@ -50,6 +55,14 @@ export default function CategoryCreatePage() {
 
                     <Form.Item label="Mô tả" name="description">
                         <Input.TextArea rows={4} />
+                    </Form.Item>
+
+                    <Form.Item label="Icon" name="icon">
+                        <Select
+                            showSearch
+                            options={iconKeys.map(icon => ({ label: icon, value: icon }))}
+                            optionRender={(option) => <Space>{renderIcon(option.data.value)} {option.label}</Space>}
+                        />
                     </Form.Item>
 
                     <Form.Item label="Trạng thái" name="status" initialValue="active">
