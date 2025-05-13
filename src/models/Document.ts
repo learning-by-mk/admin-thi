@@ -33,4 +33,5 @@ export default interface Document {
     uploaded_by: User;
     created_at: string;
     updated_at: string;
+    publish_date: string;
 }

@@ -2,14 +2,14 @@
 
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { Alert, Form, Input, Button, Select, Upload } from 'antd';
+import { Alert, Form, Input, Button, Select, Upload, Space, UploadProps, UploadFile } from 'antd';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import useNoti from '@/hooks/useNoti';
 import { show, index } from '@/apis/custom_fetch';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '@/lib/axios';
-import { URL_CONTROLLER, URL_EDIT } from '@/contains/api';
+import { URL_EDIT } from '@/contains/api';
 import { UploadOutlined } from '@ant-design/icons';
 import Category from '@/models/Category';
 import Document from '@/models/Document';
@@ -20,38 +20,24 @@ export default function DocumentEditPage() {
     const [form] = Form.useForm();
     const { noti } = useNoti()
     const [error, setError] = useState<string | null>(null)
-    const { data: document } = show('documents', documentId?.toString() || '', {
-        load: 'categories, author, uploadedBy'
+    const [fileList, setFileList] = useState<any[]>([]);
+    const queryClient = useQueryClient()
+
+    const { data: document } = show<Document>('documents', documentId?.toString() || '', {
+        load: 'categories, author, uploadedBy, file'
     })
     const { data: categories } = index('categories')
     const { data: users } = index('users')
 
+    const handleImageChange: UploadProps['onChange'] = ({ fileList }) => setFileList(fileList);
+
     const mutationUpdate = useMutation({
         mutationFn: async (data: any) => {
-            const formData = new FormData();
-
-            // Thêm các trường thông tin cơ bản
-            for (const key in data) {
-                if (key !== 'file' && key !== 'pdf_file') {
-                    formData.append(key, data[key]);
-                }
-            }
-
-            // Thêm file nếu có
-            if (data.file && data.file[0]?.originFileObj) {
-                formData.append('file', data.file[0].originFileObj);
-            }
-
-            if (data.pdf_file && data.pdf_file[0]?.originFileObj) {
-                formData.append('pdf_file', data.pdf_file[0].originFileObj);
-            }
-
             const url = URL_EDIT.replace(':controller', 'documents').replace(':id', documentId?.toString() || '')
-            const res = await axios.post(url, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            data.file_id = fileList[0]?.response?.data?.id
+            delete data.file
+            console.log(data)
+            const res = await axios.put(url, data);
             return res.data;
         },
         onError: (error) => {
@@ -64,29 +50,27 @@ export default function DocumentEditPage() {
                 description: 'Cập nhật tài liệu thành công',
                 type: 'success'
             })
-            router.push('/admin/documents')
+            queryClient.invalidateQueries({ queryKey: ['documents'] })
+            // router.push('/admin/documents')
         }
     })
 
     useEffect(() => {
         if (document?.data) {
             form.setFieldsValue({
-                ...document.data
+                ...document.data,
+                category_ids: (document.data as Document)?.categories?.map((category: Category) => category.id)
             })
         }
     }, [document, form])
-
-    const normFile = (e: any) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
-    };
 
     return (
         <div>
             <PageBreadcrumb pageTitle="Cập nhật tài liệu" />
             <ComponentCard title="Thông tin tài liệu">
+                <Space direction='vertical' size={16}>
+                    <Alert className='mb-4' message={'Tài liệu được duyệt ngày: ' + (document?.data?.publish_date ?? '')} type="info" />
+                </Space>
                 {error && <Alert className='mb-4' message={error} type="error" />}
                 <Form form={form} layout="vertical" onFinish={mutationUpdate.mutate} initialValues={{
                     ...document?.data as any,
@@ -130,24 +114,51 @@ export default function DocumentEditPage() {
                     </Form.Item>
 
                     <Form.Item
-                        label="File gốc"
+                        label={"Tài liệu"}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => e.fileList}
+                        rules={[{ required: true }]}
                         name="file"
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
                     >
-                        <Upload name="file" listType="text" maxCount={1}>
-                            <Button icon={<UploadOutlined />}>Chọn file</Button>
-                        </Upload>
-                    </Form.Item>
-
-                    <Form.Item
-                        label="File PDF"
-                        name="pdf_file"
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
-                    >
-                        <Upload name="pdf_file" listType="text" maxCount={1}>
-                            <Button icon={<UploadOutlined />}>Chọn file PDF</Button>
+                        <Upload
+                            action={`/api/files`}
+                            headers={{ Authorization: 'Bearer ' + localStorage.getItem('token') }}
+                            data={{
+                                folder: 'documents'
+                            }}
+                            maxCount={1}
+                            progress={{
+                                strokeColor: {
+                                    '0%': '#108ee9',
+                                    '100%': '#87d068',
+                                },
+                                strokeWidth: 3,
+                                format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+                            }}
+                            // fileList={fileList}
+                            onChange={handleImageChange}
+                            beforeUpload={(file) => {
+                                const isFileAllowed = file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                    || file.type === 'application/pdf'
+                                    || file.type === 'text/plain'
+                                    || file.type === 'application/vnd.ms-excel'
+                                    || file.type === 'application/vnd.ms-powerpoint';
+                                if (!isFileAllowed) {
+                                    noti({
+                                        message: "Lỗi!",
+                                        type: "error",
+                                        description: "Bạn chỉ có thể tải lên file docx/pdf/notepad/text/excel/powerpoint!"
+                                    })
+                                    return Upload.LIST_IGNORE;
+                                }
+                                return isFileAllowed;
+                            }}
+                        >
+                            {fileList.length >= 2 ? null : (
+                                <div>
+                                    <Button icon={<UploadOutlined />}>Bấm để tải lên</Button>
+                                </div>
+                            )}
                         </Upload>
                     </Form.Item>
 
