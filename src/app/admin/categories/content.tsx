@@ -74,6 +74,11 @@ const CategoriesContent = () => {
             key: 'name',
         },
         {
+            title: 'Slug',
+            dataIndex: 'slug',
+            key: 'slug',
+        },
+        {
             title: 'Icon',
             dataIndex: 'icon',
             key: 'icon',

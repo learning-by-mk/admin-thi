@@ -65,6 +65,12 @@ export default function CategoryEditPage() {
                         <Input />
                     </Form.Item>
 
+                    <Form.Item label="Slug" name="slug"
+                        rules={[{ required: true, message: 'Slug là bắt buộc' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
                     <Form.Item label="Mô tả" name="description">
                         <Input.TextArea rows={4} />
                     </Form.Item>
