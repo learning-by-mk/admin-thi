@@ -69,6 +69,17 @@ const navItems: NavItem[] = [
   },
   {
     icon: <SettingIcon />,
+    name: "Tương tác",
+    path: "/admin/interactive",
+    subItems: [
+      { name: "Bình luận", path: "/admin/interactive/comments", pro: false },
+      { name: "Đánh giá", path: "/admin/interactive/ratings", pro: false },
+      { name: "Yêu thích", path: "/admin/interactive/favorites", pro: false },
+      { name: "Tải xuống", path: "/admin/interactive/downloads", pro: false },
+    ],
+  },
+  {
+    icon: <SettingIcon />,
     name: "Cài đặt",
     path: "/admin/settings",
     subItems: [{ name: "Cài đặt", path: "/admin/settings", pro: false }],
