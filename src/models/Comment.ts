@@ -7,7 +7,8 @@ export default interface Comment {
     document: Document;
     user_id: number;
     user: User;
-    content: string;
+    comment: string;
+    score: number;
     created_at: string;
     updated_at: string;
 }

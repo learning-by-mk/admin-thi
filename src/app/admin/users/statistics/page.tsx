@@ -1,81 +1,46 @@
 "use client";
 import ComponentCard from '@/components/common/ComponentCard'
 import PageBreadcrumb from '@/components/common/PageBreadCrumb'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ApexOptions } from 'apexcharts'
 import dynamic from 'next/dynamic'
 import ChartTab from '@/components/common/ChartTab'
 import Badge from '@/components/ui/badge/Badge'
 import { ArrowDownIcon, ArrowUpIcon, GroupIcon, BoxIconLine } from '@/icons'
 import Image from 'next/image'
+import { showByUrl } from '@/apis/custom_fetch';
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
     ssr: false,
 })
 
-// Dữ liệu người dùng giả lập
-const userData = {
-    totalUsers: 3782,
-    totalActiveUsers: 2945,
-    newUsersThisMonth: 259,
-    userGrowthRate: 11.01,
-    activityStats: {
-        daily: 1245,
-        weekly: 2574,
-        monthly: 3782,
-        previousPeriodChange: -3.5
-    },
-    userDemographic: [
-        { country: 'Việt Nam', users: 2379, percentage: 62 },
-        { country: 'USA', users: 589, percentage: 16 },
-        { country: 'China', users: 420, percentage: 11 },
-        { country: 'Other', users: 394, percentage: 11 }
-    ],
-    userRegistration: [
-        { month: 'Jan', users: 180 },
-        { month: 'Feb', users: 190 },
-        { month: 'Mar', users: 170 },
-        { month: 'Apr', users: 160 },
-        { month: 'May', users: 175 },
-        { month: 'Jun', users: 165 },
-        { month: 'Jul', users: 170 },
-        { month: 'Aug', users: 205 },
-        { month: 'Sep', users: 230 },
-        { month: 'Oct', users: 210 },
-        { month: 'Nov', users: 240 },
-        { month: 'Dec', users: 235 }
-    ],
-    userActivity: [
-        { month: 'Jan', activeUsers: 140 },
-        { month: 'Feb', activeUsers: 150 },
-        { month: 'Mar', activeUsers: 130 },
-        { month: 'Apr', activeUsers: 120 },
-        { month: 'May', activeUsers: 145 },
-        { month: 'Jun', activeUsers: 135 },
-        { month: 'Jul', activeUsers: 140 },
-        { month: 'Aug', activeUsers: 175 },
-        { month: 'Sep', activeUsers: 200 },
-        { month: 'Oct', activeUsers: 185 },
-        { month: 'Nov', activeUsers: 220 },
-        { month: 'Dec', activeUsers: 210 }
-    ],
-    userDeviceUsage: {
-        mobile: 65,
-        desktop: 25,
-        tablet: 10
-    },
-    userRoles: {
-        admin: 25,
-        moderator: 120,
-        regular: 3637
-    }
+const Mount: Record<number, string> = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec"
 }
 
 export default function StatisticsPage() {
+    const { data: userStatistics } = showByUrl<any>(`/api/users/statistics/show`)
 
+    useEffect(() => {
+        // if (userStatistics) {
+        //     setUserData(userStatistics)
+        // }
+        console.log(userStatistics)
+    }, [userStatistics])
     // Cấu hình biểu đồ đăng ký và hoạt động người dùng
-    const userChartOptions: ApexOptions = {
+    const userChartOptions: ApexOptions = useMemo(() => ({
         legend: {
             show: false,
         },
@@ -127,7 +92,7 @@ export default function StatisticsPage() {
         },
         xaxis: {
             type: 'category',
-            categories: userData.userRegistration.map(item => item.month),
+            categories: Object.values(Mount)?.map((item: string) => item),
             axisBorder: {
                 show: false,
             },
@@ -152,43 +117,22 @@ export default function StatisticsPage() {
                 },
             },
         },
-    }
+    }), [userStatistics, Mount])
 
-    const userChartSeries = [
+    const userChartSeries = useMemo(() => ([
         {
             name: 'Người đăng ký mới',
-            data: userData.userRegistration.map(item => item.users),
+            data: userStatistics?.data?.userRegistration?.map((item: any) => item.users),
         },
         {
             name: 'Người dùng hoạt động',
-            data: userData.userActivity.map(item => item.activeUsers),
+            data: userStatistics?.data?.userActivity?.map((item: any) => item.activeUsers),
         },
-    ]
+    ]), [userStatistics])
 
-    // Cấu hình biểu đồ thiết bị sử dụng
-    const deviceChartOptions: ApexOptions = {
-        chart: {
-            type: 'donut',
-        },
-        colors: ['#465FFF', '#9CB9FF', '#D4DDFF'],
-        labels: ['Di động', 'Máy tính', 'Máy tính bảng'],
-        legend: {
-            position: 'bottom',
-        },
-        plotOptions: {
-            pie: {
-                donut: {
-                    size: '65%',
-                },
-            },
-        },
-    }
-
-    const deviceChartSeries = [
-        userData.userDeviceUsage.mobile,
-        userData.userDeviceUsage.desktop,
-        userData.userDeviceUsage.tablet,
-    ]
+    useEffect(() => {
+        console.log('userChartOptions', userChartOptions, Object.values(Mount)?.map((item: string) => item))
+    }, [userChartOptions])
 
     return (
         <div>
@@ -208,12 +152,12 @@ export default function StatisticsPage() {
                                 Tổng người dùng
                             </span>
                             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-                                {userData.totalUsers}
+                                {userStatistics?.data?.totalUsers}
                             </h4>
                         </div>
                         <Badge color="success">
                             <ArrowUpIcon />
-                            {userData.userGrowthRate}%
+                            {userStatistics?.data?.userGrowthRate}%
                         </Badge>
                     </div>
                 </div>
@@ -229,13 +173,13 @@ export default function StatisticsPage() {
                                 Người dùng mới (tháng này)
                             </span>
                             <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-                                {userData.newUsersThisMonth}
+                                {userStatistics?.data?.newUsersThisMonth}
                             </h4>
                         </div>
 
                         <Badge color="error">
                             <ArrowDownIcon className="text-error-500" />
-                            {userData.activityStats.previousPeriodChange}%
+                            {userStatistics?.data?.activityStats.previousPeriodChange}%
                         </Badge>
                     </div>
                 </div>
@@ -270,23 +214,22 @@ export default function StatisticsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-                {/* Biểu đồ thiết bị */}
-                <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+                {/* <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-6">
                         Thiết bị sử dụng
                     </h3>
                     <div className="h-[300px]">
                         <ReactApexChart
                             options={deviceChartOptions}
-                            series={deviceChartSeries}
+                            // series={deviceChartSeries}
                             type="donut"
                             height={300}
                         />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Thống kê theo quốc gia */}
-                <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+                {/* <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 mb-2">
                         Người dùng theo quốc gia
                     </h3>
@@ -295,7 +238,7 @@ export default function StatisticsPage() {
                     </p>
 
                     <div className="space-y-5">
-                        {userData.userDemographic.map((country, index) => (
+                        {userStatistics?.data?.userDemographic?.map((country: any, index: number) => (
                             <div key={index} className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div>
@@ -322,7 +265,7 @@ export default function StatisticsPage() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )

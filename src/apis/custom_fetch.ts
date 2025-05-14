@@ -35,3 +35,15 @@ export const show = <T>(controller: string, id: number | string, params?: ApiReq
         },
     });
 };
+export const showByUrl = <T>(url: string, params?: ApiRequestDetailFilter): UseQueryResult<ApiResponseDetail<T>> => {
+    if (params?.load?.length) {
+        params.load = Array.isArray(params.load) ? params.load.join(',') : params.load;
+    }
+    return useQuery({
+        queryKey: [url],
+        queryFn: async () => {
+            const { data } = await axios.get<ApiResponseDetail<T>>(url, { params });
+            return data;
+        },
+    });
+};
