@@ -4,12 +4,13 @@ import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { Alert, Form, Input, Button, Select, Upload, UploadProps, Image, UploadFile } from 'antd';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import useNoti from '@/hooks/useNoti';
 import { index } from '@/apis/custom_fetch';
 import { useMutation } from '@tanstack/react-query';
 import axios from '@/lib/axios';
-import ReactQuill from 'react-quill-new'
+import dynamic from 'next/dynamic';
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 import 'react-quill-new/dist/quill.snow.css'
 import { URL_CONTROLLER } from '@/contains/api';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -54,6 +55,12 @@ export default function DocumentCreatePage() {
     const [imageList, setImageList] = useState<any[]>([]);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [previewOpen, setPreviewOpen] = useState(false);
+    const token = useMemo(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('token')
+        }
+        return null
+    }, [])
 
     const { data: categories } = index('categories')
     const { data: users } = index('users')
@@ -110,6 +117,7 @@ export default function DocumentCreatePage() {
                             return <pre>{JSON.stringify(form.getFieldsValue(), null, 2)}</pre>;
                         }}
                     </Form.Item> */}
+
                     <Form.Item
                         label={"Hình ảnh"}
                         valuePropName="fileList"
@@ -119,7 +127,7 @@ export default function DocumentCreatePage() {
                     >
                         <Upload
                             action={`/api/files`}
-                            headers={{ Authorization: 'Bearer ' + localStorage.getItem('token') }}
+                            headers={{ Authorization: 'Bearer ' + token }}
                             data={{
                                 folder: 'avatars'
                             }}
@@ -150,6 +158,7 @@ export default function DocumentCreatePage() {
                             )}
                         </Upload>
                     </Form.Item>
+
                     <Form.Item label="Tiêu đề" name="title"
                         rules={[{ required: true, message: 'Tiêu đề là bắt buộc' }]}
                     >
@@ -199,7 +208,7 @@ export default function DocumentCreatePage() {
                     >
                         <Upload
                             action={`/api/files`}
-                            headers={{ Authorization: 'Bearer ' + localStorage.getItem('token') }}
+                            headers={{ Authorization: 'Bearer ' + token }}
                             data={{
                                 folder: 'documents'
                             }}
