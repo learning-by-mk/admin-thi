@@ -9,6 +9,7 @@ import useNoti from '@/hooks/useNoti';
 import { show, index } from '@/apis/custom_fetch';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '@/lib/axios';
+import dynamic from 'next/dynamic';
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 import 'react-quill-new/dist/quill.snow.css'
 import { URL_EDIT } from '@/contains/api';
@@ -17,7 +18,6 @@ import Category from '@/models/Category';
 import Document from '@/models/Document';
 import { getBase64 } from '@/lib/functions';
 import { RcFile } from 'antd/es/upload';
-import dynamic from 'next/dynamic';
 const editorStyle = {
     width: '100%',
     height: '500px',

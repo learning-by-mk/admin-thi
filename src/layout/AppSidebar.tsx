@@ -70,12 +70,15 @@ const navItems: NavItem[] = [
   {
     icon: <SettingIcon />,
     name: "Tương tác",
-    // path: "/admin/interactions",
+    path: "/admin/interactions",
     subItems: [
       { name: "Bình luận", path: "/admin/interactions/comments", pro: false },
       { name: "Đánh giá", path: "/admin/interactions/ratings", pro: false },
       { name: "Yêu thích", path: "/admin/interactions/favorites", pro: false },
       { name: "Tải xuống", path: "/admin/interactions/downloads", pro: false },
+      { name: "Thống kê", path: "/admin/interactions/stats", pro: false },
+      { name: "Quản lý tương tác", path: "/admin/interactions", pro: false },
+
     ],
   },
   {
