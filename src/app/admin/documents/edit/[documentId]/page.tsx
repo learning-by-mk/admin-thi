@@ -18,6 +18,7 @@ import Category from '@/models/Category';
 import Document from '@/models/Document';
 import { getBase64 } from '@/lib/functions';
 import { RcFile } from 'antd/es/upload';
+import Topic from '@/models/Topic';
 const editorStyle = {
     width: '100%',
     height: '500px',
@@ -61,9 +62,10 @@ export default function DocumentEditPage() {
     const [previewOpen, setPreviewOpen] = useState(false);
 
     const { data: document } = show<Document>('documents', documentId?.toString() || '', {
-        load: 'categories, author, uploadedBy, file, image'
+        load: 'categories, author, uploadedBy, file, image, topics'
     })
     const { data: categories } = index('categories')
+    const { data: topics } = index('topics')
     const { data: users } = index('users')
 
     const [contentPost, setContentPost] = useState<string>('');
@@ -115,7 +117,8 @@ export default function DocumentEditPage() {
                 ...document.data,
                 file: document.data?.file,
                 image: document.data?.image,
-                category_ids: (document.data as Document)?.categories?.map((category: Category) => category.id)
+                // category_id: (document.data as Document)?.categories?.map((category: Category) => category.id)
+                topic_ids: (document.data as Document)?.topics?.map((topic: Topic) => topic.id)
             })
         }
     }, [document, form])
@@ -130,7 +133,7 @@ export default function DocumentEditPage() {
                 {error && <Alert className='mb-4' message={error} type="error" />}
                 <Form form={form} layout="vertical" onFinish={mutationUpdate.mutate} initialValues={{
                     ...document?.data as any,
-                    category_ids: (document?.data as Document)?.categories?.map((category: Category) => category.id)
+                    topic_ids: (document?.data as Document)?.topics?.map((topic: Topic) => topic.id)
                 }}>
                     {/* <Form.Item shouldUpdate>
                         {() => {
@@ -187,14 +190,23 @@ export default function DocumentEditPage() {
                         <Input.TextArea rows={4} />
                     </Form.Item>
 
-                    <Form.Item label="Danh mục" name="category_ids"
+                    <Form.Item label="Danh mục" name="category_id"
                         rules={[{ required: true, message: 'Danh mục là bắt buộc' }]}
+                    >
+                        <Select
+                            allowClear
+                            showSearch
+                            options={categories?.data?.map((category: any) => ({ label: category.name, value: category.id })) || []} />
+                    </Form.Item>
+
+                    <Form.Item label="Chủ đề" name="topic_ids"
+                        rules={[{ required: true, message: 'Chủ đề là bắt buộc' }]}
                     >
                         <Select
                             mode='multiple'
                             allowClear
                             showSearch
-                            options={categories?.data?.map((category: any) => ({ label: category.name, value: category.id })) || []} />
+                            options={topics?.data?.map((topic: any) => ({ label: topic.name, value: topic.id })) || []} />
                     </Form.Item>
 
                     <Form.Item label="Tác giả" name="author_id">

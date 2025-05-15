@@ -63,6 +63,7 @@ export default function DocumentCreatePage() {
     }, [])
 
     const { data: categories } = index('categories')
+    const { data: topics } = index('topics')
     const { data: users } = index('users')
 
     const [contentPost, setContentPost] = useState<string>('');
@@ -169,14 +170,23 @@ export default function DocumentCreatePage() {
                         <Input.TextArea rows={4} />
                     </Form.Item>
 
-                    <Form.Item label="Danh mục" name="category_ids"
+                    <Form.Item label="Danh mục" name="category_id"
                         rules={[{ required: true, message: 'Danh mục là bắt buộc' }]}
+                    >
+                        <Select
+                            allowClear
+                            showSearch
+                            options={categories?.data?.map((category: any) => ({ label: category.name, value: category.id })) || []} />
+                    </Form.Item>
+
+                    <Form.Item label="Chủ đề" name="topic_ids"
+                        rules={[{ required: true, message: 'Chủ đề là bắt buộc' }]}
                     >
                         <Select
                             mode='multiple'
                             allowClear
                             showSearch
-                            options={categories?.data?.map((category: any) => ({ label: category.name, value: category.id })) || []} />
+                            options={topics?.data?.map((topic: any) => ({ label: topic.name, value: topic.id })) || []} />
                     </Form.Item>
 
                     <Form.Item label="Tác giả" name="author_id">
