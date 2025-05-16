@@ -209,17 +209,6 @@ export default function DocumentEditPage() {
                             options={topics?.data?.map((topic: any) => ({ label: topic.name, value: topic.id })) || []} />
                     </Form.Item>
 
-                    <Form.Item label="Giá" name="price">
-                        <InputNumber<number>
-                            min={0} style={{ width: '100%' }}
-                            formatter={(value) => `VNĐ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                            parser={(value) => value?.replace(/VNĐ\s?|(,*)/g, '') as unknown as number} />
-                    </Form.Item>
-
-                    <Form.Item label="Miễn phí" name="is_free" valuePropName='checked'>
-                        <Checkbox />
-                    </Form.Item>
-
                     <Form.Item label="Tác giả" name="author_id">
                         <Select options={users?.data?.map((user: any) => ({ label: user.name, value: user.id })) || []} disabled />
                     </Form.Item>
