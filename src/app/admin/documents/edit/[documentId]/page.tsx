@@ -2,7 +2,7 @@
 
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { Alert, Form, Input, Button, Select, Upload, Space, UploadProps, UploadFile, Image } from 'antd';
+import { Alert, Form, Input, Button, Select, Upload, Space, UploadProps, UploadFile, Image, InputNumber, Switch, Checkbox } from 'antd';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import useNoti from '@/hooks/useNoti';
@@ -62,7 +62,7 @@ export default function DocumentEditPage() {
     const [previewOpen, setPreviewOpen] = useState(false);
 
     const { data: document } = show<Document>('documents', documentId?.toString() || '', {
-        load: 'categories, author, uploadedBy, file, image, topics'
+        load: 'category,topics, author, uploadedBy, file, image, topics'
     })
     const { data: categories } = index('categories')
     const { data: topics } = index('topics')
@@ -107,7 +107,7 @@ export default function DocumentEditPage() {
                 type: 'success'
             })
             queryClient.invalidateQueries({ queryKey: ['documents'] })
-            // router.push('/admin/documents')
+            router.push('/admin/documents')
         }
     })
 
@@ -117,7 +117,7 @@ export default function DocumentEditPage() {
                 ...document.data,
                 file: document.data?.file,
                 image: document.data?.image,
-                // category_id: (document.data as Document)?.categories?.map((category: Category) => category.id)
+                category_id: (document.data as Document)?.category?.id,
                 topic_ids: (document.data as Document)?.topics?.map((topic: Topic) => topic.id)
             })
         }
@@ -207,6 +207,17 @@ export default function DocumentEditPage() {
                             allowClear
                             showSearch
                             options={topics?.data?.map((topic: any) => ({ label: topic.name, value: topic.id })) || []} />
+                    </Form.Item>
+
+                    <Form.Item label="Giá" name="price">
+                        <InputNumber<number>
+                            min={0} style={{ width: '100%' }}
+                            formatter={(value) => `VNĐ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={(value) => value?.replace(/VNĐ\s?|(,*)/g, '') as unknown as number} />
+                    </Form.Item>
+
+                    <Form.Item label="Miễn phí" name="is_free" valuePropName='checked'>
+                        <Checkbox />
                     </Form.Item>
 
                     <Form.Item label="Tác giả" name="author_id">

@@ -5,6 +5,7 @@ import ChatbotQuestion from './ChatbotQuestion';
 import Comment from './Comment';
 import Favorite from './Favorite';
 import File from './File';
+import Price from './Price';
 import Rating from './Rating';
 import Topic from './Topic';
 import User from './User';
@@ -49,4 +50,5 @@ export default interface Document {
     file: File[];
     file_id: number;
     like_count: number;
+    price: Price;
 }

@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Tabs, Select, DatePicker, Spin } from 'antd';
 import ComponentCard from '@/components/common/ComponentCard';
 import { getInteractionStats } from '@/apis/interactionStats';
 import { InteractionStats } from '@/models/InteractionStats';
 import dynamic from 'next/dynamic';
+import { showByUrl } from '@/apis/custom_fetch';
 
 // Dynamic imports để tránh lỗi SSR với chart.js
 const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), { ssr: false });
@@ -19,6 +20,7 @@ export default function StatsContent() {
     const [timeRange, setTimeRange] = useState('month');
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<InteractionStats | null>(null);
+    const { data: interactionStats } = showByUrl<InteractionStats>('/api/interaction/statistics')
 
     useEffect(() => {
         const initChartJS = async () => {
@@ -36,101 +38,102 @@ export default function StatsContent() {
         initChartJS();
     }, []);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const data = await getInteractionStats(timeRange);
-                setStats(data);
-            } catch (error) {
-                console.error('Lỗi khi tải dữ liệu thống kê:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         setLoading(true);
+    //         try {
+    //             const data = await getInteractionStats(timeRange);
+    //             setStats(data);
+    //         } catch (error) {
+    //             console.error('Lỗi khi tải dữ liệu thống kê:', error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchData();
-    }, [timeRange]);
+    //     fetchData();
+    // }, [timeRange]);
 
     // Chuyển đổi dữ liệu cho biểu đồ Line
-    const getRatingChartData = () => {
-        if (!stats) return null;
-
+    const getRatingChartData = useCallback(() => {
+        if (!interactionStats) return null;
+        console.log('interactionStats', interactionStats?.data)
+        console.log(interactionStats?.data?.timeSeriesData?.ratings?.counts?.labels)
         return {
-            labels: stats.timeSeriesData.ratings.counts.labels,
+            labels: interactionStats?.data?.timeSeriesData?.ratings?.counts?.labels,
             datasets: [
                 {
                     label: 'Số lượng đánh giá',
-                    data: stats.timeSeriesData.ratings.counts.values,
+                    data: interactionStats?.data?.timeSeriesData?.ratings?.counts?.values,
                     borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 },
                 {
                     label: 'Điểm đánh giá trung bình',
-                    data: stats.timeSeriesData.ratings.averageScores.values,
+                    data: interactionStats?.data?.timeSeriesData?.ratings?.averageScores?.values,
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                 }
             ],
         };
-    };
+    }, [interactionStats]);
 
-    const getFavoriteChartData = () => {
-        if (!stats) return null;
+    const getFavoriteChartData = useCallback(() => {
+        if (!interactionStats) return null;
 
         return {
-            labels: stats.timeSeriesData.favorites.counts.labels,
+            labels: interactionStats?.data?.timeSeriesData?.favorites?.counts?.labels,
             datasets: [
                 {
                     label: 'Số lượt yêu thích',
-                    data: stats.timeSeriesData.favorites.counts.values,
+                    data: interactionStats?.data?.timeSeriesData?.favorites?.counts?.values,
                     borderColor: 'rgb(54, 162, 235)',
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                 }
             ],
         };
-    };
+    }, [interactionStats]);
 
-    const getCommentChartData = () => {
-        if (!stats) return null;
+    const getCommentChartData = useCallback(() => {
+        if (!interactionStats) return null;
 
         return {
-            labels: stats.timeSeriesData.comments.counts.labels,
+            labels: interactionStats?.data?.timeSeriesData?.comments?.counts?.labels,
             datasets: [
                 {
                     label: 'Số lượng bình luận',
-                    data: stats.timeSeriesData.comments.counts.values,
+                    data: interactionStats?.data?.timeSeriesData?.comments?.counts?.values,
                     borderColor: 'rgb(255, 159, 64)',
                     backgroundColor: 'rgba(255, 159, 64, 0.5)',
                 }
             ],
         };
-    };
+    }, [interactionStats]);
 
-    const getDownloadChartData = () => {
-        if (!stats) return null;
+    const getDownloadChartData = useCallback(() => {
+        if (!interactionStats) return null;
 
         return {
-            labels: stats.timeSeriesData.downloads.counts.labels,
+            labels: interactionStats?.data?.timeSeriesData?.downloads?.counts?.labels,
             datasets: [
                 {
                     label: 'Số lượt tải xuống',
-                    data: stats.timeSeriesData.downloads.counts.values,
+                    data: interactionStats?.data?.timeSeriesData?.downloads?.counts?.values,
                     borderColor: 'rgb(153, 102, 255)',
                     backgroundColor: 'rgba(153, 102, 255, 0.5)',
                 }
             ],
         };
-    };
+    }, [interactionStats]);
 
-    const getDistributionChartData = () => {
-        if (!stats) return null;
+    const getDistributionChartData = useCallback(() => {
+        if (!interactionStats) return null;
 
         return {
-            labels: stats.interactionDistribution.labels,
+            labels: interactionStats?.data?.interactionDistribution?.labels,
             datasets: [
                 {
-                    data: stats.interactionDistribution.values,
+                    data: interactionStats?.data?.interactionDistribution?.values,
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.7)',
                         'rgba(54, 162, 235, 0.7)',
@@ -147,22 +150,22 @@ export default function StatsContent() {
                 },
             ],
         };
-    };
+    }, [interactionStats]);
 
-    const getTopDocumentsChartData = () => {
-        if (!stats) return null;
+    const getTopDocumentsChartData = useCallback(() => {
+        if (!interactionStats) return null;
 
         return {
-            labels: stats.topDocuments.map(doc => doc.title),
+            labels: interactionStats?.data?.topDocuments?.map(doc => doc.title),
             datasets: [
                 {
                     label: 'Số lượt tương tác',
-                    data: stats.topDocuments.map(doc => doc.interactionCount),
+                    data: interactionStats?.data?.topDocuments?.map(doc => doc.interactionCount),
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 },
             ],
         };
-    };
+    }, [interactionStats]);
 
     // if (loading) {
     //     return (
@@ -172,7 +175,7 @@ export default function StatsContent() {
     //     );
     // }
 
-    if (!stats) {
+    if (!interactionStats) {
         return (
             <div className="text-center py-8">
                 <p>Không thể tải dữ liệu thống kê. Vui lòng thử lại sau.</p>
@@ -228,25 +231,25 @@ export default function StatsContent() {
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tổng số đánh giá</p>
-                                                <p className="text-3xl font-bold text-blue-600">{stats.summary.ratings.total}</p>
+                                                <p className="text-3xl font-bold text-blue-600">{interactionStats?.data?.summary?.ratings?.total}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Điểm trung bình</p>
-                                                <p className="text-3xl font-bold text-green-600">{stats.summary.ratings.average}</p>
+                                                <p className="text-3xl font-bold text-green-600">{interactionStats?.data?.summary?.ratings?.average}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Đánh giá mới (7 ngày)</p>
-                                                <p className="text-3xl font-bold text-purple-600">{stats.summary.ratings.newCount}</p>
+                                                <p className="text-3xl font-bold text-purple-600">{interactionStats?.data?.summary?.ratings?.newCount}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tỉ lệ tăng trưởng</p>
-                                                <p className="text-3xl font-bold text-red-600">+{stats.summary.ratings.growthRate}%</p>
+                                                <p className="text-3xl font-bold text-red-600">+{interactionStats?.data?.summary?.ratings?.growthRate}%</p>
                                             </div>
                                         </Card>
                                     </div>
@@ -265,25 +268,25 @@ export default function StatsContent() {
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tổng số yêu thích</p>
-                                                <p className="text-3xl font-bold text-blue-600">{stats.summary.favorites.total.toLocaleString()}</p>
+                                                <p className="text-3xl font-bold text-blue-600">{interactionStats?.data?.summary?.favorites?.total.toLocaleString()}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Yêu thích mới (7 ngày)</p>
-                                                <p className="text-3xl font-bold text-green-600">{stats.summary.favorites.newCount}</p>
+                                                <p className="text-3xl font-bold text-green-600">{interactionStats?.data?.summary?.favorites?.newCount}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">TB yêu thích/tài liệu</p>
-                                                <p className="text-3xl font-bold text-purple-600">{stats.summary.favorites.averagePerDocument}</p>
+                                                <p className="text-3xl font-bold text-purple-600">{interactionStats?.data?.summary?.favorites?.averagePerDocument}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tỉ lệ tăng trưởng</p>
-                                                <p className="text-3xl font-bold text-red-600">+{stats.summary.favorites.growthRate}%</p>
+                                                <p className="text-3xl font-bold text-red-600">+{interactionStats?.data?.summary?.favorites?.growthRate}%</p>
                                             </div>
                                         </Card>
                                     </div>
@@ -302,25 +305,25 @@ export default function StatsContent() {
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tổng số bình luận</p>
-                                                <p className="text-3xl font-bold text-blue-600">{stats.summary.comments.total.toLocaleString()}</p>
+                                                <p className="text-3xl font-bold text-blue-600">{interactionStats?.data?.summary?.comments?.total.toLocaleString()}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Bình luận mới (7 ngày)</p>
-                                                <p className="text-3xl font-bold text-green-600">{stats.summary.comments.newCount}</p>
+                                                <p className="text-3xl font-bold text-green-600">{interactionStats?.data?.summary?.comments?.newCount}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">TB bình luận/tài liệu</p>
-                                                <p className="text-3xl font-bold text-purple-600">{stats.summary.comments.averagePerDocument}</p>
+                                                <p className="text-3xl font-bold text-purple-600">{interactionStats?.data?.summary?.comments?.averagePerDocument}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tỉ lệ tăng trưởng</p>
-                                                <p className="text-3xl font-bold text-red-600">+{stats.summary.comments.growthRate}%</p>
+                                                <p className="text-3xl font-bold text-red-600">+{interactionStats?.data?.summary?.comments?.growthRate}%</p>
                                             </div>
                                         </Card>
                                     </div>
@@ -339,25 +342,25 @@ export default function StatsContent() {
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tổng số tải xuống</p>
-                                                <p className="text-3xl font-bold text-blue-600">{stats.summary.downloads.total.toLocaleString()}</p>
+                                                <p className="text-3xl font-bold text-blue-600">{interactionStats?.data?.summary?.downloads?.total.toLocaleString()}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tải xuống mới (7 ngày)</p>
-                                                <p className="text-3xl font-bold text-green-600">{stats.summary.downloads.newCount}</p>
+                                                <p className="text-3xl font-bold text-green-600">{interactionStats?.data?.summary?.downloads?.newCount}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">TB tải xuống/tài liệu</p>
-                                                <p className="text-3xl font-bold text-purple-600">{stats.summary.downloads.averagePerDocument}</p>
+                                                <p className="text-3xl font-bold text-purple-600">{interactionStats?.data?.summary?.downloads?.averagePerDocument}</p>
                                             </div>
                                         </Card>
                                         <Card>
                                             <div className="text-center">
                                                 <p className="text-lg font-medium">Tỉ lệ tăng trưởng</p>
-                                                <p className="text-3xl font-bold text-red-600">+{stats.summary.downloads.growthRate}%</p>
+                                                <p className="text-3xl font-bold text-red-600">+{interactionStats?.data?.summary?.downloads?.growthRate}%</p>
                                             </div>
                                         </Card>
                                     </div>

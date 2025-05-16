@@ -69,6 +69,14 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    icon: <FileIcon />,
+    name: "Giao dịch",
+    path: "/admin/transactions",
+    subItems: [
+      { name: "Danh sách giao dịch", path: "/admin/transactions", pro: false },
+    ],
+  },
+  {
     icon: <SettingIcon />,
     name: "Tương tác",
     path: "/admin/interactions",

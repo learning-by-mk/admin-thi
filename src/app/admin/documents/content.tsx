@@ -15,6 +15,7 @@ import Document from '@/models/Document';
 import Category from '@/models/Category';
 import { colors } from '@/contains/colorTag';
 import { TablePaginationConfig } from 'antd/es/table';
+import Price from '@/models/Price';
 
 interface TableParams {
     pagination?: TablePaginationConfig;
@@ -26,7 +27,7 @@ const DocumentsContent = () => {
     const queryClient = useQueryClient();
 
     const { data: documents } = index<Document>('documents', {
-        load: "categories, author, uploadedBy"
+        load: "category,topics, author, uploadedBy,price"
     })
 
     const [tableParams, setTableParams] = useState<TableParams>({
@@ -73,10 +74,10 @@ const DocumentsContent = () => {
         },
         {
             title: 'Danh mục',
-            dataIndex: 'categories',
+            dataIndex: 'category',
             key: 'category',
-            render: (categories: Category[]) => {
-                return categories.map((category) => <Tag color={colors[Math.floor(Math.random() * 10)]} key={category.id}>{category.name}</Tag>);
+            render: (category: Category) => {
+                return <Tag color={colors[Math.floor(Math.random() * 10)]} key={category?.id}>{category?.name}</Tag>;
             }
         },
         {
@@ -91,6 +92,16 @@ const DocumentsContent = () => {
                     color = 'red';
                 }
                 return <Tag color={color}>{status}</Tag>;
+            },
+        },
+        {
+            title: 'Giá',
+            dataIndex: 'price',
+            key: 'price',
+            render: (price: Price) => {
+                const amount = price?.price;
+                if (!amount) return null;
+                return price?.is_free ? <Tag color="green">Miễn phí</Tag> : <Tag color="default">{amount?.toLocaleString()} VNĐ</Tag>;
             },
         },
         {
