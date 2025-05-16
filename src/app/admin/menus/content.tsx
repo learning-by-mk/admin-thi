@@ -13,10 +13,11 @@ import useNoti from '@/hooks/useNoti'
 import Role from '@/models/Role'
 import { colors } from '@/contains/colorTag'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import Menu from '@/models/Menu'
 interface TableParams {
     pagination?: TablePaginationConfig;
 }
-export default function UserContent() {
+export default function MenuContent() {
     const { noti } = useNoti()
     const queryClient = useQueryClient()
     const [tableParams, setTableParams] = useState<TableParams>({
@@ -25,14 +26,11 @@ export default function UserContent() {
             pageSize: 100,
         },
     });
-
-    const { data: users } = index<User>('users', {
-        load: 'roles',
-    })
+    const { data: menus } = index<Menu>('menus', { load: 'parent', })
 
     const mutationDelete = useMutation({
         mutationFn: async (id: string) => {
-            const url = URL_CONTROLLER.replace(':controller', 'users') + `/${id}`;
+            const url = URL_CONTROLLER.replace(':controller', 'menus') + `/${id}`;
             const res = await axios.delete(url);
             return res.data;
         },
@@ -50,11 +48,11 @@ export default function UserContent() {
                 description: 'Xóa thành công',
                 type: 'success',
             })
-            queryClient.invalidateQueries({ queryKey: ['users'] })
+            queryClient.invalidateQueries({ queryKey: ['menus'] })
         },
     })
 
-    const columns: TableProps<User>['columns'] = [
+    const columns: TableProps<Menu>['columns'] = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -66,35 +64,40 @@ export default function UserContent() {
             key: 'name',
         },
         {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
+            title: 'Slug',
+            dataIndex: 'slug',
+            key: 'slug',
+        },
+        {
+            title: 'Href',
+            dataIndex: 'href',
+            key: 'href',
+        },
+        {
+            title: 'Parent',
+            dataIndex: ['parent', 'name'],
+            key: 'parent'
+        },
+        {
+            title: 'Thứ tự',
+            dataIndex: 'order',
+            key: 'order',
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-            render: (text: string, record: User) => {
-                return <Tag color={record.status === 'active' ? 'green' : 'red'}>{record.status}</Tag>
-            }
-        },
-        {
-            title: 'Vai trò',
-            dataIndex: 'roles',
-            key: 'roles',
-            render: (roles: Role[]) => {
-                return roles.map((role: Role, index: number) => <Tag color={colors[Math.floor(Math.random() * 10)]} key={role.id}>{role.name}</Tag>)
-            }
+            dataIndex: 'is_active',
+            key: 'is_active',
+            render: (text: boolean) => text ? <Tag color={'green'}>Hoạt động</Tag> : <Tag color={'red'}>Không hoạt động</Tag>
         },
         {
             title: 'Hành động',
             dataIndex: 'actions',
             key: 'actions',
-            render: (text: string, record: User) => {
+            render: (text: string, record: Menu) => {
                 return (
                     <Space size="middle">
                         <Button type='primary' icon={<EditOutlined />} >
-                            <Link href={`/admin/users/edit/${record.id}`}>Chỉnh sửa</Link>
+                            <Link href={`/admin/menus/edit/${record.id}`}>Chỉnh sửa</Link>
                         </Button>
                         <Popconfirm
                             title="Bạn có chắc chắn muốn xóa không?"
@@ -108,7 +111,14 @@ export default function UserContent() {
         },
     ]
 
+
     return (
-        <Table columns={columns} dataSource={users?.data ?? []} pagination={tableParams.pagination} />
+        <Table
+            columns={columns}
+            dataSource={menus?.data ?? []}
+            pagination={tableParams.pagination}
+            rowKey={(record) => record.id}
+            expandable={{ expandedRowRender: undefined, expandIcon: () => null }}
+        />
     )
 }

@@ -20,6 +20,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
+import { LinkIcon, MenuIcon } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -79,6 +80,14 @@ const navItems: NavItem[] = [
       { name: "Thống kê", path: "/admin/interactions/stats", pro: false },
       { name: "Quản lý tương tác", path: "/admin/interactions", pro: false },
 
+    ],
+  },
+  {
+    icon: <MenuIcon />,
+    name: "Menu",
+    path: "/admin/menus",
+    subItems: [{ name: "Tạo menu", path: "/admin/menus/create", pro: false },
+    { name: "Danh sách menu", path: "/admin/menus", pro: false },
     ],
   },
   {

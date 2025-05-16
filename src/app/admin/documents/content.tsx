@@ -134,6 +134,7 @@ const DocumentsContent = () => {
             dataSource={documents?.data || []}
             rowKey="id"
             pagination={tableParams.pagination}
+            expandable={{ expandedRowRender: undefined, expandIcon: () => null }}
 
         />
     );

@@ -13,7 +13,7 @@ export const index = <T>(controller: string, params?: ApiRequestListFilter, url?
         params.load = Array.isArray(params.load) ? params.load.join(',') : params.load;
     }
     return useQuery({
-        queryKey: [controller, { params }],
+        queryKey: [controller],
         queryFn: async () => {
             const baseUrl = url || URL_CONTROLLER.replace(':controller', controller);
             const { data } = await axios.get<ApiResponseList<T>>(baseUrl, { params });
@@ -27,7 +27,7 @@ export const show = <T>(controller: string, id: number | string, params?: ApiReq
         params.load = Array.isArray(params.load) ? params.load.join(',') : params.load;
     }
     return useQuery({
-        queryKey: [controller, id, params],
+        queryKey: [controller, id],
         queryFn: async () => {
             const baseUrl = url || URL_CONTROLLER_ID.replace(':controller', controller).replace(':id', id.toString());
             const { data } = await axios.get<ApiResponseDetail<T>>(baseUrl, { params });
