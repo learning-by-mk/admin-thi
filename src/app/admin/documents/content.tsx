@@ -26,7 +26,7 @@ const DocumentsContent = () => {
     const queryClient = useQueryClient();
 
     const { data: documents } = index<Document>('documents', {
-        load: "category,topics, author, uploadedBy"
+        load: "category,topics, author, uploaded_by"
     })
 
     const [tableParams, setTableParams] = useState<TableParams>({

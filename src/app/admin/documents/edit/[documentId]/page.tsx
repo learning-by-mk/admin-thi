@@ -62,7 +62,7 @@ export default function DocumentEditPage() {
     const [previewOpen, setPreviewOpen] = useState(false);
 
     const { data: document } = show<Document>('documents', documentId?.toString() || '', {
-        load: 'category,topics, author, uploadedBy, file, image, topics'
+        load: 'category,topics, author, uploaded_by, file, image'
     })
     const { data: categories } = index('categories')
     const { data: topics } = index('topics')
