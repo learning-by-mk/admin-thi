@@ -20,7 +20,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
-import { LinkIcon, MenuIcon } from "lucide-react";
+import { LinkIcon, MenuIcon, MessageCircleIcon } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -70,14 +70,6 @@ const navItems: NavItem[] = [
   },
   {
     icon: <FileIcon />,
-    name: "Giao dịch",
-    path: "/admin/transactions",
-    subItems: [
-      { name: "Danh sách giao dịch", path: "/admin/transactions", pro: false },
-    ],
-  },
-  {
-    icon: <SettingIcon />,
     name: "Tương tác",
     path: "/admin/interactions",
     subItems: [
@@ -94,8 +86,18 @@ const navItems: NavItem[] = [
     icon: <MenuIcon />,
     name: "Menu",
     path: "/admin/menus",
-    subItems: [{ name: "Tạo menu", path: "/admin/menus/create", pro: false },
-    { name: "Danh sách menu", path: "/admin/menus", pro: false },
+    subItems: [
+      { name: "Tạo menu", path: "/admin/menus/create", pro: false },
+      { name: "Danh sách menu", path: "/admin/menus", pro: false },
+    ],
+  },
+  {
+    icon: <ListIcon />,
+    // icon: <MessageCircleIcon />,
+    name: "Đề xuất",
+    path: "/admin/inquiries",
+    subItems: [
+      { name: "Danh sách đề xuất", path: "/admin/inquiries", pro: false },
     ],
   },
   {
