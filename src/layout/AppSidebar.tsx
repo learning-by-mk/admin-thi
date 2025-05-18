@@ -20,7 +20,7 @@ import {
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
-import { LinkIcon, MenuIcon, MessageCircleIcon } from "lucide-react";
+import { DollarSignIcon, LinkIcon, MenuIcon, MessageCircleIcon } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -57,6 +57,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Tạo tài liệu", path: "/admin/documents/create", pro: false },
       { name: "Danh sách tài liệu", path: "/admin/documents", pro: false },
+      { name: "Thống kê", path: "/admin/documents/statistical", pro: false },
     ],
   },
   {
@@ -98,6 +99,16 @@ const navItems: NavItem[] = [
     path: "/admin/inquiries",
     subItems: [
       { name: "Danh sách đề xuất", path: "/admin/inquiries", pro: false },
+    ],
+  },
+  {
+    icon: <DollarSignIcon />,
+    name: "Điểm số",
+    path: "/admin/points",
+    subItems: [
+      { name: "Tổng quan", path: "/admin/points", pro: false },
+      { name: "Lịch sử điểm", path: "/admin/points/history", pro: false },
+      { name: "Điểm người dùng", path: "/admin/points/users", pro: false },
     ],
   },
   {

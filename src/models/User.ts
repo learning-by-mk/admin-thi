@@ -13,4 +13,5 @@ export default interface User {
     email_verified_at: string;
     isAdmin: boolean;
     avatar: File[];
+    points: number;
 }
