@@ -62,7 +62,7 @@ export default function DocumentEditPage() {
     const [previewOpen, setPreviewOpen] = useState(false);
 
     const { data: document } = show<Document>('documents', documentId?.toString() || '', {
-        load: 'category,topics, author, uploaded_by, file, image'
+        load: 'category,topics, author, uploaded_by, file, image,price'
     })
     const { data: categories } = index('categories')
     const { data: topics } = index('topics')
@@ -118,7 +118,8 @@ export default function DocumentEditPage() {
                 file: document.data?.file,
                 image: document.data?.image,
                 category_id: (document.data as Document)?.category?.id,
-                topic_ids: (document.data as Document)?.topics?.map((topic: Topic) => topic.id)
+                topic_ids: (document.data as Document)?.topics?.map((topic: Topic) => topic.id),
+                points: (document.data as Document)?.price?.points ?? 0
             })
         }
     }, [document, form])
@@ -207,6 +208,10 @@ export default function DocumentEditPage() {
                             allowClear
                             showSearch
                             options={topics?.data?.map((topic: any) => ({ label: topic.name, value: topic.id })) || []} />
+                    </Form.Item>
+
+                    <Form.Item label="Điểm tải xuống" name="points">
+                        <InputNumber min={0} addonAfter={'điểm'} disabled style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item label="Tác giả" name="author_id">

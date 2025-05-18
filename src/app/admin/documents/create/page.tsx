@@ -2,7 +2,7 @@
 
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { Alert, Form, Input, Button, Select, Upload, UploadProps, Image, UploadFile } from 'antd';
+import { Alert, Form, Input, Button, Select, Upload, UploadProps, Image, UploadFile, InputNumber } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react'
 import useNoti from '@/hooks/useNoti';
@@ -187,6 +187,12 @@ export default function DocumentCreatePage() {
                             allowClear
                             showSearch
                             options={topics?.data?.map((topic: any) => ({ label: topic.name, value: topic.id })) || []} />
+                    </Form.Item>
+
+                    <Form.Item label="Điểm tải xuống" name="points"
+                        rules={[{ required: true, message: 'Điểm tải xuống là bắt buộc' }]}
+                    >
+                        <InputNumber min={0} addonAfter={'điểm'} style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item label="Tác giả" name="author_id">
